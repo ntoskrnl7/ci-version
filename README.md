@@ -1,10 +1,20 @@
 # ci-version
 
 - [ci-version](#ci-version)
+  - [Requirements](#requirements)
   - [Usage](#usage)
     - [Macros](#macros)
       - [Examples](#examples)
   - [Test](#test)
+
+## Requirements
+
+- Linux
+- macOS
+- Windows
+- bash
+  - Git, MSYS2, MINGW
+- CMake 3.13+
 
 ## Usage
 
@@ -99,5 +109,5 @@ puts(__CI_SEMVER__);
 
 ```bash
 cd test
-
+./test.sh
 ````

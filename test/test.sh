@@ -6,11 +6,16 @@ bin=$(realpath `dirname $BASH_SOURCE`/../bin)
 
 rm -rf .config
 $bin/init.sh
-cmake -S . -B build -DCI_VERSION_PATH=`realpath .config`
+cmake -S . -B build -DCI_VERSION_PATH=`realpath .config` > /dev/null
 
 function build_and_test() {
-    cmake --build build
-    res=`./build/test`
+    cmake --build build > /dev/null
+
+    if [ -f ./build/test ]; then
+        res=`./build/test`
+    elif [ -f ./build/Debug/test ]; then
+        res=`./build/Debug/test`
+    fi
 
     res2=`$bin/semver.sh`
     

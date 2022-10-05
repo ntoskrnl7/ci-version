@@ -1,7 +1,10 @@
 #!/usr/bin/bash
 
 bin=$(realpath `dirname $BASH_SOURCE`)
+
 . $bin/find-ci-version-path.sh
+
+mkdir -p $bin/version
 
 echo '
 #include <ci-version/version.h>
@@ -10,10 +13,34 @@ echo '
 void main() {
     puts(__CI_VERSION__);
 }
-' > $bin/version.c
+' > $bin/version/main.c
 
-gcc $bin/version.c -o $bin/version -I $CI_VERSION_PATH/.. -I $bin/../include
-$bin/version
+echo '
+cmake_minimum_required(VERSION 3.13)
 
-rm $bin/version
-rm $bin/version.c
+project(version C)
+
+add_executable(version main.c)
+
+target_include_directories(version PRIVATE ../../include)
+target_include_directories(version PRIVATE ${CI_VERSION_PATH})
+' > $bin/version/CMakeLists.txt
+
+cmake -S $bin/version -B $bin/version/build -DCI_VERSION_PATH=$CI_VERSION_PATH/.. > /dev/null
+cmake --build $bin/version/build  > /dev/null
+
+if [ -f $bin/version/build/Debug/version.exe ]; then
+    $bin/version/build/Debug/version.exe
+    rm -rf $bin/version
+    exit $?
+fi
+
+if [ -f $bin/version/build/version ]; then
+    $bin/version/build/version
+    rm -rf $bin/version
+    exit $?
+fi
+
+rm -rf $bin/version
+
+exit 1
