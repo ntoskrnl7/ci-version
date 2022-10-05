@@ -1,3 +1,5 @@
-.config
-test/.config
-test/build
+.config/
+test/.config/
+test/build/
+bin/semver/
+bin/version/

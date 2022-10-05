@@ -8,8 +8,9 @@ rm -rf .config
 $bin/init.sh
 cmake -S . -B build -DCI_VERSION_PATH=`realpath .config` > /dev/null
 
+ret=0
 function build_and_test() {
-    cmake --build build > /dev/null
+    cmake --build build --parallel $(nproc) > /dev/null
 
     if [ -f ./build/test ]; then
         res=`./build/test`
@@ -23,6 +24,7 @@ function build_and_test() {
         echo [OK]$res == $res2
     else
         echo  [FAILED] $res != $res2
+        ret=`expr $ret + 1`
     fi
 }
 
@@ -53,3 +55,5 @@ build_and_test
 rm -rf .config
 
 rm -rf build
+
+exit $ret
