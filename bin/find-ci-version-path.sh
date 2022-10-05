@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 if [ ! -f "$CI_VERSION_PATH/major.h" ]; then
-    CI_VERSION_PATH=`realpath ./.config/ci-version`
+    CI_VERSION_PATH=./.config/ci-version
     if [ ! -f "$CI_VERSION_PATH/major.h" ]; then
         CI_VERSION_PATH=../../.config/ci-version
         if [ ! -f "$CI_VERSION_PATH/major.h" ]; then
