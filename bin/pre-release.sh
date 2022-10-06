@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 bin=$(realpath `dirname $BASH_SOURCE`)
 
