@@ -39,7 +39,7 @@ fi
 
 if [ -z `which cygpath 2>/dev/null` ]; then
     function convpath() {
-        echo `cygpath -d -m $1`
+        echo $1
     }
 else
     function convpath() {
