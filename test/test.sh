@@ -53,8 +53,10 @@ build_and_test
 $bin/major.sh 2
 build_and_test
 
-$bin/build-metadata.sh
 $bin/release.sh
+build_and_test
+
+$bin/build-metadata.sh ci-version.test
 build_and_test
 
 $bin/pre-release.sh rc.2
@@ -63,12 +65,16 @@ build_and_test
 $bin/patch.sh
 build_and_test
 
+$bin/build-metadata.sh 
 $bin/major.sh
 build_and_test
 
+$bin/pre-release.sh rtm
 $bin/minor.sh
 build_and_test
 
+$bin/major.sh
+$bin/build-metadata.sh `date '+%y%m%d'`
 $bin/release.sh
 build_and_test
 
