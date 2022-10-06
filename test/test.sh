@@ -33,12 +33,12 @@ clean 2>/dev/null
 
 $bin/init.sh
 
-cmake -S . -B build
+cmake -S . -B build > /dev/null
 
 ret=0
 
 function build_and_test() {
-    cmake --build build --parallel `nproc` --clean-first
+    cmake --build build --parallel `nproc` --clean-first > /dev/null
 
     if [ -f ./build/test ]; then
         res=`./build/test`
