@@ -1,20 +1,5 @@
 #!/bin/bash
 
-if [ ! -f "$CI_VERSION_PATH/major.h" ]; then
-    CI_VERSION_PATH=./.config/ci-version
-    if [ ! -f "$CI_VERSION_PATH/major.h" ]; then
-        CI_VERSION_PATH=../../.config/ci-version
-        if [ ! -f "$CI_VERSION_PATH/major.h" ]; then
-            CI_VERSION_PATH=
-        fi
-    fi
-fi
-
-if [ -z $CI_VERSION_PATH ]; then
-    echo 'invalid CI_VERSION_PATH : ' $CI_VERSION_PATH
-    exit 1
-fi
-
 if [ -z `which realpath 2>/dev/null` ]; then
     function realpath() {
         local _X="$PWD"
@@ -29,4 +14,18 @@ if [ -z `which realpath 2>/dev/null` ]; then
     }
 fi
 
-CI_VERSION_PATH=`realpath $CI_VERSION_PATH`
+if [ -z  $CI_VERSION_PATH ]; then
+    CI_VERSION_PATH=.config/ci-version
+fi
+
+cur=`realpath $CI_VERSION_PATH`
+while [ ! -f "$cur/major.h" ] && [  "$cur"  !=  "/" ]
+do
+    cur=`realpath $cur/..`
+done
+
+if [ ! -f "$cur/major.h" ]; then
+    exit 1
+fi
+
+export CI_VERSION_PATH=$cur

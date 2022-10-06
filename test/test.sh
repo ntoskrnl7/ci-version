@@ -13,21 +13,29 @@ if [ -z `which realpath 2>/dev/null` ]; then
         cd "$_X"
     }
 fi
-
-cd $(realpath `dirname $0`)
-
-bin=$(realpath `dirname $BASH_SOURCE`/../bin)
-
-rm -rf .config
-$bin/init.sh
-cmake -S . -B build -DCI_VERSION_PATH=`realpath .config` > /dev/null
-
-ret=0
 if [ -z `which nproc 2>/dev/null` ]; then
     function nproc() {
         echo `sysctl -n hw.physicalcpu`
     }
 fi
+
+function clean() {
+    rm ci-version.cmake
+    rm -rf .config
+    rm -rf build
+}
+
+cd $(realpath `dirname $0`)
+
+bin=$(realpath `dirname $BASH_SOURCE`/../bin)
+
+clean 2>/dev/null
+
+$bin/init.sh
+
+cmake -S . -B build > /dev/null
+
+ret=0
 
 function build_and_test() {
     cmake --build build --parallel `nproc` > /dev/null
@@ -57,6 +65,8 @@ build_and_test '2.0.0'
 $bin/build-metadata.sh ci-version.test
 build_and_test '2.0.0+ci-version.test'
 
+$bin/init.sh
+
 $bin/pre-release.sh rc.2
 build_and_test '2.0.0-rc.2+ci-version.test'
 
@@ -76,7 +86,6 @@ $bin/build-metadata.sh `date '+%y%m%d'`
 $bin/release.sh
 build_and_test '4.0.0+'`date '+%y%m%d'`
 
-rm -rf .config
-rm -rf build
+clean 2>/dev/null
 
 exit $ret

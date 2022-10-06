@@ -30,7 +30,14 @@ mkdir -p $CI_VERSION_PATH
 
 bin=$(realpath `dirname $0`)
 
-echo '' > $CI_VERSION_PATH/major.h
-$bin/major.sh 0
-$bin/build-metadata.sh
-$bin/pre-release.sh
+if [ ! -f $CI_VERSION_PATH/major.h ]; then
+    echo '' > $CI_VERSION_PATH/major.h
+    $bin/major.sh 0
+    $bin/build-metadata.sh
+    $bin/pre-release.sh
+fi
+
+echo 'function(ci_version target)
+    target_include_directories(${target} PRIVATE "'`realpath $bin/../include`'")
+    target_include_directories(${target} PRIVATE "'`realpath $CI_VERSION_PATH/..`'")
+endfunction()' > $root/ci-version.cmake
