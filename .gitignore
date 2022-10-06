@@ -3,3 +3,4 @@ test/.config/
 test/build/
 bin/semver/
 bin/version/
+test/ci-version.cmake

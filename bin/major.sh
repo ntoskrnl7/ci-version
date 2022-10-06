@@ -1,12 +1,12 @@
-#!/usr/bin/bash
+#!/bin/bash
 
-bin=$(realpath `dirname $BASH_SOURCE`)
+bin=`dirname $BASH_SOURCE`
 
 . $bin/find-ci-version-path.sh
 
 if [ -z $1 ]; then
-    major=$(sed 's/#define __CI_MAJOR_VERSION__//g' $CI_VERSION_PATH/major.h)
-    major=$(expr $major + 1)
+    major=`sed 's/#define __CI_MAJOR_VERSION__//g' $CI_VERSION_PATH/major.h`
+    major=`expr $major + 1`
 else
     major=$1
 fi

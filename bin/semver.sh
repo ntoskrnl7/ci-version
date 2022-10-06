@@ -1,6 +1,6 @@
-#!/usr/bin/bash
+#!/bin/bash
 
-bin=$(realpath `dirname $BASH_SOURCE`)
+bin=`dirname $BASH_SOURCE`
 
 . $bin/find-ci-version-path.sh
 
@@ -10,8 +10,9 @@ echo '
 #include <ci-version/semver.h>
 #include <stdio.h>
 
-void main() {
+int main() {
     puts(__CI_SEMVER__);
+    return 0;
 }
 ' > $bin/semver/main.c
 

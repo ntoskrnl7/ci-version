@@ -1,6 +1,6 @@
-#!/usr/bin/bash
+#!/bin/bash
 
-bin=$(realpath `dirname $BASH_SOURCE`)
+bin=`dirname $BASH_SOURCE`
 
 . $bin/find-ci-version-path.sh
 
@@ -10,8 +10,9 @@ echo '
 #include <ci-version/version.h>
 #include <stdio.h>
 
-void main() {
+int main() {
     puts(__CI_VERSION__);
+    return 0;
 }
 ' > $bin/version/main.c
 

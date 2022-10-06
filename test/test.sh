@@ -1,16 +1,44 @@
-#!/usr/bin/bash
+#!/bin/bash
+
+if [ -z `which realpath 2>/dev/null` ]; then
+    function realpath() {
+        local _X="$PWD"
+        local _LNK=$1
+        cd "$(dirname "$_LNK")"
+        if [ -h "$_LNK" ]; then
+            _LNK="$(readlink "$_LNK")"
+            cd "$(dirname "$_LNK")"
+        fi
+        echo "$PWD/$(basename "$_LNK")"
+        cd "$_X"
+    }
+fi
+if [ -z `which nproc 2>/dev/null` ]; then
+    function nproc() {
+        echo `sysctl -n hw.physicalcpu`
+    }
+fi
+
+function clean() {
+    rm ci-version.cmake
+    rm -rf .config
+    rm -rf build
+}
 
 cd $(realpath `dirname $0`)
 
 bin=$(realpath `dirname $BASH_SOURCE`/../bin)
 
-rm -rf .config
+clean 2>/dev/null
+
 $bin/init.sh
-cmake -S . -B build -DCI_VERSION_PATH=`realpath .config` > /dev/null
+
+cmake -S . -B build > /dev/null
 
 ret=0
+
 function build_and_test() {
-    cmake --build build --parallel $(nproc) > /dev/null
+    cmake --build build --parallel `nproc` --clean-first > /dev/null
 
     if [ -f ./build/test ]; then
         res=`./build/test`
@@ -18,42 +46,46 @@ function build_and_test() {
         res=`./build/Debug/test`
     fi
 
-    res2=`$bin/semver.sh`
-    
-    if [ "$res" == "$res2"  ]; then
-        echo [OK]$res == $res2
+    if [ "$1" == "$res"  ]; then
+        echo [OK]$res
     else
-        echo  [FAILED] $res != $res2
+        echo  [FAILED] excepted: $1, actual: $res
         ret=`expr $ret + 1`
     fi
 }
 
-build_and_test
+build_and_test '0.0.0-alpha'
 
 $bin/major.sh 2
-build_and_test
+build_and_test '2.0.0-alpha'
 
-$bin/build-metadata.sh
 $bin/release.sh
-build_and_test
+build_and_test '2.0.0'
+
+$bin/build-metadata.sh ci-version.test
+build_and_test '2.0.0+ci-version.test'
+
+$bin/init.sh
 
 $bin/pre-release.sh rc.2
-build_and_test
+build_and_test '2.0.0-rc.2+ci-version.test'
 
 $bin/patch.sh
-build_and_test
+build_and_test '2.0.1-rc.2+ci-version.test'
+
+$bin/build-metadata.sh 
+$bin/major.sh
+build_and_test '3.0.0-rc.2'
+
+$bin/pre-release.sh rtm
+$bin/minor.sh
+build_and_test '3.1.0-rtm'
 
 $bin/major.sh
-build_and_test
-
-$bin/minor.sh
-build_and_test
-
+$bin/build-metadata.sh `date '+%y%m%d'`
 $bin/release.sh
-build_and_test
+build_and_test '4.0.0+'`date '+%y%m%d'`
 
-rm -rf .config
-
-rm -rf build
+clean 2>/dev/null
 
 exit $ret

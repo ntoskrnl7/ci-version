@@ -1,6 +1,6 @@
-#!/usr/bin/bash
+#!/bin/bash
 
-bin=$(realpath `dirname $BASH_SOURCE`)
+bin=`dirname $BASH_SOURCE`
 
 . $bin/find-ci-version-path.sh
 
