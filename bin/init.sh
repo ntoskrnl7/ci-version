@@ -1,5 +1,19 @@
 #!/bin/bash
 
+if [ -z `which realpath 2>/dev/null` ]; then
+    function realpath() {
+        local _X="$PWD"
+        local _LNK=$1
+        cd "$(dirname "$_LNK")"
+        if [ -h "$_LNK" ]; then
+            _LNK="$(readlink "$_LNK")"
+            cd "$(dirname "$_LNK")"
+        fi
+        echo "$PWD/$(basename "$_LNK")"
+        cd "$_X"
+    }
+fi
+
 if [ -z $1 ]; then
     root=`realpath .`
 else

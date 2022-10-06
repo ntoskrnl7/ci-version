@@ -15,4 +15,18 @@ if [ -z $CI_VERSION_PATH ]; then
     exit 1
 fi
 
+if [ -z `which realpath 2>/dev/null` ]; then
+    function realpath() {
+        local _X="$PWD"
+        local _LNK=$1
+        cd "$(dirname "$_LNK")"
+        if [ -h "$_LNK" ]; then
+            _LNK="$(readlink "$_LNK")"
+            cd "$(dirname "$_LNK")"
+        fi
+        echo "$PWD/$(basename "$_LNK")"
+        cd "$_X"
+    }
+fi
+
 CI_VERSION_PATH=`realpath $CI_VERSION_PATH`
