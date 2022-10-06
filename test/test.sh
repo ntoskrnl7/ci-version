@@ -58,11 +58,9 @@ build_and_test '0.0.0-alpha'
 
 $bin/major.sh 2
 build_and_test '2.0.0-alpha'
-$bin/semver.sh
 
 $bin/release.sh
 build_and_test '2.0.0'
-$bin/semver.sh
 
 $bin/build-metadata.sh ci-version.test
 build_and_test '2.0.0+ci-version.test'
