@@ -1,5 +1,7 @@
 # ci-version
 
+[![CI](https://github.com/ntoskrnl7/ci-version/actions/workflows/main.yml/badge.svg)](https://github.com/ntoskrnl7/ci-version/actions/workflows/main.yml)
+
 - [ci-version](#ci-version)
   - [Requirements](#requirements)
   - [Usage](#usage)
