@@ -33,12 +33,12 @@ clean 2>/dev/null
 
 $bin/init.sh
 
-cmake -S . -B build > /dev/null
+cmake -S . -B build
 
 ret=0
 
 function build_and_test() {
-    cmake --build build --parallel `nproc` > /dev/null
+    cmake --build build --parallel `nproc`
 
     if [ -f ./build/test ]; then
         res=`./build/test`
@@ -58,9 +58,11 @@ build_and_test '0.0.0-alpha'
 
 $bin/major.sh 2
 build_and_test '2.0.0-alpha'
+$bin/semver.sh
 
 $bin/release.sh
 build_and_test '2.0.0'
+$bin/semver.sh
 
 $bin/build-metadata.sh ci-version.test
 build_and_test '2.0.0+ci-version.test'
