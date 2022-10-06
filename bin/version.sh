@@ -10,8 +10,9 @@ echo '
 #include <ci-version/version.h>
 #include <stdio.h>
 
-void main() {
+int main() {
     puts(__CI_VERSION__);
+    return 0;
 }
 ' > $bin/version/main.c
 

@@ -10,8 +10,9 @@ echo '
 #include <ci-version/semver.h>
 #include <stdio.h>
 
-void main() {
+int main() {
     puts(__CI_SEMVER__);
+    return 0;
 }
 ' > $bin/semver/main.c
 

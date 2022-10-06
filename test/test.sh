@@ -23,8 +23,14 @@ $bin/init.sh
 cmake -S . -B build -DCI_VERSION_PATH=`realpath .config` > /dev/null
 
 ret=0
+if [ -z `which nproc 2>/dev/null` ]; then
+    function nproc() {
+        echo `sysctl -n hw.physicalcpu`
+    }
+fi
+
 function build_and_test() {
-    cmake --build build --parallel $(nproc) > /dev/null
+    cmake --build build --parallel `nproc` > /dev/null
 
     if [ -f ./build/test ]; then
         res=`./build/test`
