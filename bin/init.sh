@@ -37,7 +37,17 @@ if [ ! -f $CI_VERSION_PATH/major.h ]; then
     $bin/pre-release.sh
 fi
 
+if [ -z `which cygpath 2>/dev/null` ]; then
+    function convpath() {
+        echo `cygpath -d -m $1`
+    }
+else
+    function convpath() {
+        echo `cygpath -d -m $1`
+    }
+fi
+
 echo 'function(ci_version target)
-    target_include_directories(${target} PRIVATE "'`realpath $bin/../include`'")
-    target_include_directories(${target} PRIVATE "'`realpath $CI_VERSION_PATH/..`'")
+    target_include_directories(${target} PRIVATE "'$(convpath `realpath $bin/../include`)'")
+    target_include_directories(${target} PRIVATE "'$(convpath `realpath $CI_VERSION_PATH/..`)'")
 endfunction()' > $root/ci-version.cmake
