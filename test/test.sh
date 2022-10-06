@@ -38,7 +38,7 @@ cmake -S . -B build
 ret=0
 
 function build_and_test() {
-    cmake --build build --parallel `nproc`
+    cmake --build build --parallel `nproc` --clean-first
 
     if [ -f ./build/test ]; then
         res=`./build/test`
