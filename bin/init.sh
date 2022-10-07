@@ -1,6 +1,32 @@
 #!/bin/bash
+set -ae
 
-if [ -z `which realpath 2>/dev/null` ]; then
+BIN=`dirname $BASH_SOURCE`
+
+. $BIN/parse-args.sh
+
+ROOT_PATH=.
+POSITIONAL_ARGS=()
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -r|--root-path)
+            ROOT_PATH="$2"
+            shift
+            shift
+        ;;
+        -*|--*)
+            echo "Unknown option $1"
+            exit 1
+        ;;
+        *)
+            POSITIONAL_ARGS+=("$1")
+            shift
+        ;;
+    esac
+done
+set -- "${POSITIONAL_ARGS[@]}"
+
+if [ -z `which realpath 2> /dev/null` ]; then
     function realpath() {
         local _X="$PWD"
         local _LNK=$1
@@ -14,30 +40,24 @@ if [ -z `which realpath 2>/dev/null` ]; then
     }
 fi
 
-if [ -z $1 ]; then
-    root=`realpath .`
-else
-    root=`realpath $1`
-fi
-
-if [ ! -d "$root" ]; then
-    echo 'invalid directory : ' $root
+ROOT_PATH=`realpath $ROOT_PATH`
+if [ ! -d "$ROOT_PATH" ]; then
+    echo 'invalid directory : ' $ROOT_PATH
     exit 1
 fi
 
-export CI_VERSION_PATH=$root/.config/ci-version
+export CI_VERSION_PATH=$ROOT_PATH/.config/ci-version
 mkdir -p $CI_VERSION_PATH
-
-bin=$(realpath `dirname $0`)
 
 if [ ! -f $CI_VERSION_PATH/major.h ]; then
     echo '' > $CI_VERSION_PATH/major.h
-    $bin/major.sh 0
-    $bin/build-metadata.sh
-    $bin/pre-release.sh
+    $BIN/major.sh 0 --no-git-tag-version
+    $BIN/pre-release.sh --no-git-tag-version
+    $BIN/build-metadata.sh --no-git-tag-version
+    $BIN/git-commit.sh
 fi
 
-if [ -z `which cygpath 2>/dev/null` ]; then
+if [ -z `which cygpath 2> /dev/null` ]; then
     function convpath() {
         echo $1
     }
@@ -48,6 +68,6 @@ else
 fi
 
 echo 'function(ci_version target)
-    target_include_directories(${target} PRIVATE "'$(convpath `realpath $bin/../include`)'")
+    target_include_directories(${target} PRIVATE "'$(convpath `realpath $BIN/../include`)'")
     target_include_directories(${target} PRIVATE "'$(convpath `realpath $CI_VERSION_PATH/..`)'")
-endfunction()' > $root/ci-version.cmake
+endfunction()' > $ROOT_PATH/ci-version.cmake

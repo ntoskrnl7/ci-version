@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ -z `which realpath 2>/dev/null` ]; then
+if [ -z `which realpath 2> /dev/null` ]; then
     function realpath() {
         local _X="$PWD"
         local _LNK=$1
