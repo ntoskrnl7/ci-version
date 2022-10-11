@@ -1,9 +1,15 @@
 #!/bin/bash
 
-bin=`dirname $BASH_SOURCE`
+BIN=`dirname $BASH_SOURCE`
 
-. $bin/find-ci-version-path.sh
+. $BIN/parse-args.sh
+. $BIN/find-ci-version-path.sh
+
+if [ "$GIT_COMMIT_AND_TAG_VERSION" == "YES" ]; then
+    OLD_VER=`$BIN/semver.sh`
+fi
 
 echo '#define __CI_PRE_RELEASE__' > $CI_VERSION_PATH/pre-release.h
 
-$bin/date.sh
+$BIN/date.sh
+$BIN/git-commit.sh $OLD_VER

@@ -1,6 +1,6 @@
 .config/
 test/.config/
-test/build/
-bin/semver/
-bin/version/
+test/build_*/
+bin/semver_*/
+bin/version_*/
 test/ci-version.cmake
